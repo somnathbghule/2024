@@ -101,8 +101,12 @@ std::string getNumberInWord(int digit, int placeholder) {
 
 int main() {
     // Write C++ code here
-    int n = 1000000;
-    std::cout << n << std::endl;
+    std::cout << "Enter Number: ";
+    int n = 0;
+
+    std::cin >> n ;
+
     printNumberInWords(n);
+    std::cout << std::endl;
     return 0;
 }
