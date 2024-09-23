@@ -1,14 +1,18 @@
 
 // Online C++ compiler to run C++ program online
 #include <iostream>
+#include <stack>
+#include <string>
+
 
 std::string getNumberInWord(int digit, int placeholder);
+bool getPlaceHolder(int &digit, int &placeholder);
 
 const char *lessThan20[] = {
-"zero", "one", "two", "three", "four", "five",  "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen" 
+    "", "one", "two", "three", "four", "five",  "six", "seven", "eight", "nine","ten","eleven", "twelve", "thirteen", "fourteen", 
+    "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"
 };
 
-const char *multipleOf100[] = {"hundred", "thousand"};
 const char *multipleOf10[] = {"", "", "twenty", "thirty", "fourty", "fifty", "sixty", "seventy", "eighty", "ninety" };
 
 void printNumberInWords (int n) {
@@ -16,78 +20,93 @@ void printNumberInWords (int n) {
     static int digit = 0;
     std::string word;
     int number = n;
-    if (n) {
-            int tenthPlace = 10;
-            digit = n % tenthPlace;
-            if (digit != 0) {
-                if ((placeholder % 1000) == 0 && (n % 1000) > 9) {
-                    placeholder *= tenthPlace; 
-                    tenthPlace = 100;
-                    digit = n % tenthPlace;
-                } 
-                word = getNumberInWord(digit, placeholder);
-            }
-            n = n / tenthPlace;
-            placeholder *= tenthPlace; 
-        
-        printNumberInWords(n);
+    std::stack <std::string> words;
+    int prevPopped = 0;
+    int lastDigit = 0;
+    if (n < 20) {
+        word = getNumberInWord(n, 1);
         std::cout << word <<" ";
+        return;
     }
-}
+    while (n) {
 
-int calculatePlaceHolder(int digit) {
-    if (digit < 20) {
-        return 1;
-    }
-    if (digit >= 20 && digit < 100) {
-        return 10;
-    }
-    
-    if (digit >= 100 && digit < 1000) {
-        return 100;
-    }
-    if (digit > 1000 && digit <= 1000) {
-        return 10000;
-    }
-    if (digit > 10000 && digit <= 100000) {
-        return 100000;
+        lastDigit = digit;
+        digit = n % 10;
+
+        if (digit != 0) {
+            word = getNumberInWord(digit, placeholder);
+            if (!word.empty()) {
+                if (placeholder/10 == 1000 || placeholder/10 == 100000) {
+                    if (!words.empty() && lastDigit) {
+                        std::cout << "popping " << words.top() << std::endl;
+                        words.pop();
+                    }
+                    //std::cout << " digit " << digit << std::endl;
+                    //std::cout << " placeholder " << placeholder << std::endl;
+                    //std::cout << " lastDigit " << lastDigit << std::endl;
+                    word = getNumberInWord(digit*10 + lastDigit, placeholder/10);
+                } else if (placeholder == 1 && (number % 100 < 20)) {
+                    if (!words.empty()) {
+                        std::cout << "popping " << words.top() << std::endl;
+                        words.pop();
+                    }
+                    //std::cout << " number " << number << std::endl;
+                    //std::cout << " placeholder " << placeholder << std::endl;
+                    word = getNumberInWord(number % 100, 1);
+                }
+                words.push(word);
+            }
+        } 
+
+        n = n / 10;
+        placeholder *= 10; 
     }
 
-    return 1000;
+    while(!words.empty()) {
+        std::cout<<words.top() << " "; 
+        words.pop();
+    }
 }
 
 std::string getNumberInWord(int digit, int placeholder) {
     //std::cout  << "digit \"" << digit << "\" placeholder \"" << placeholder << "\""<< std::endl; 
     switch (placeholder) {
         case 1:
+        if (digit > sizeof(lessThan20)) {
+            
+            return getNumberInWord(digit, placeholder);
+        }
         return  lessThan20[digit];
 
         case 10:
-        if ((digit %  10) && digit > 20) {
-            return std::string(multipleOf10[digit/10]) + std::string(" ") + getNumberInWord(digit%10, 1);
-        }
-        return multipleOf10[digit];
+        return std::string(multipleOf10[digit]);
                 
-        case 100 :
+        case 100:
+        if (digit > 19) {
+            
+            return getNumberInWord(digit, 10);
+        }
         return getNumberInWord(digit, 1) + " hundered";
         
         case 1000:
-        return getNumberInWord(digit, calculatePlaceHolder(digit)) + " thousand";
+        if (digit > 19) {
+            
+            return getNumberInWord(digit/10, 10) + " "+ getNumberInWord(digit%10, 1) + " thousand";
+        }
+        return getNumberInWord(digit, 1) + " thousand";
 
         case 10000:
-        if (digit < 10) {
-            digit = digit*10;
-        }
-        return getNumberInWord(digit, 1000);
+        return getNumberInWord(digit/10, 1000);
 
         case 100000:
-        return getNumberInWord(digit, calculatePlaceHolder(digit)) + " lakh";
+        if (digit > 19) {
+            
+            return getNumberInWord(digit/10, 10) + " "+ getNumberInWord(digit%10, 1) + " lakh";
+        }
+        return getNumberInWord(digit, 1) + " lakh";
         
         case 1000000:
-        if (digit < 10) {
-            digit = digit*10;
-        }
-        return getNumberInWord(digit, 100000);
+        return getNumberInWord(digit/10, 100000) ;
 
         default:
         std::cout << "Not handled yet" << std::endl;
