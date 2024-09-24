@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stack>
 #include <string>
-
+#include <logging.h>
 
 std::string getNumberInWord(int digit, int placeholder);
 bool getPlaceHolder(int &digit, int &placeholder);
@@ -38,20 +38,15 @@ void printNumberInWords (int n) {
             if (!word.empty()) {
                 if (placeholder/10 == 1000 || placeholder/10 == 100000) {
                     if (!words.empty() && lastDigit) {
-                        std::cout << "popping " << words.top() << std::endl;
+                        LOG("popping " + words.top());
                         words.pop();
                     }
-                    //std::cout << " digit " << digit << std::endl;
-                    //std::cout << " placeholder " << placeholder << std::endl;
-                    //std::cout << " lastDigit " << lastDigit << std::endl;
                     word = getNumberInWord(digit*10 + lastDigit, placeholder/10);
                 } else if (placeholder == 1 && (number % 100 < 20)) {
                     if (!words.empty()) {
-                        std::cout << "popping " << words.top() << std::endl;
+                        LOG("popping " + words.top());
                         words.pop();
                     }
-                    //std::cout << " number " << number << std::endl;
-                    //std::cout << " placeholder " << placeholder << std::endl;
                     word = getNumberInWord(number % 100, 1);
                 }
                 words.push(word);
@@ -69,7 +64,7 @@ void printNumberInWords (int n) {
 }
 
 std::string getNumberInWord(int digit, int placeholder) {
-    //std::cout  << "digit \"" << digit << "\" placeholder \"" << placeholder << "\""<< std::endl; 
+    //LOG("digit \"" + digit + "\" placeholder \"" + placeholder + "\""); 
     switch (placeholder) {
         case 1:
         if (digit > sizeof(lessThan20)) {
