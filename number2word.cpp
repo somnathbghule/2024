@@ -15,12 +15,11 @@ const char *lessThan20[] = {
 
 const char *multipleOf10[] = {"", "", "twenty", "thirty", "fourty", "fifty", "sixty", "seventy", "eighty", "ninety" };
 
-void printNumberInWords (int n) {
+void printNumberInWords (int n, std::stack <std::string> &words) {
     static int placeholder = 1;
     static int digit = 0;
     std::string word;
     int number = n;
-    std::stack <std::string> words;
     int prevPopped = 0;
     int lastDigit = 0;
     if (n < 20) {
@@ -119,8 +118,9 @@ int main() {
     int n = 0;
 
     std::cin >> n ;
+    std::stack <std::string> words;
 
-    printNumberInWords(n);
+    printNumberInWords(n, words);
     std::cout << std::endl;
     return 0;
 }

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG
 #define LOG(x) (std::cout << std::string(x) << std::endl)
